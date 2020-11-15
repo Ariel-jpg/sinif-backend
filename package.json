@@ -1,0 +1,29 @@
+{
+  "name": "sinif-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "prod": "node src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.9",
+    "socket.io": "^3.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ariel-jpg/sinif-backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Ariel-jpg/sinif-backend/issues"
+  },
+  "homepage": "https://github.com/Ariel-jpg/sinif-backend#readme",
+  "description": ""
+}
