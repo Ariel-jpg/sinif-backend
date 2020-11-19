@@ -5,7 +5,7 @@ const UserSchema = new Schema({
     username: { type: String, required: true },
     subjectsId: { type: Array, required: true },
     password: { type: String, required: true },
-    role: { type: Boolean, required: true } // False = alumno, true es profesor
+    role: { type: Boolean, required: true } // False = alumno, True = profesor
 });
 
 module.exports = model("UserSchema", UserSchema);

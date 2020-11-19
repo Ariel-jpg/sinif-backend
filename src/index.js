@@ -12,7 +12,7 @@ const socket = require("socket.io")(server, {
     }
 });
 require("./utils/database"); // Check
-const { GET_MESSAGES, NEW_CLASS_MESSAGE_EVENT, numberQuestionsPerRequest, GET_COMMENTS, NEW_COMMENT_EVENT } = require("./utils/constants.json");
+const { GET_MESSAGES, NEW_CLASS_MESSAGE_EVENT, numberDataPerRequest, GET_COMMENTS, NEW_COMMENT_EVENT } = require("./utils/constants.json");
 
 socket.on("connection", async socketConnected => {
     // Join a conversation
@@ -20,25 +20,11 @@ socket.on("connection", async socketConnected => {
     socketConnected.join(classCode);
     socketConnected.join(questionId);
 
-    console.log(classCode, questionId);
-
-    socketConnected.on(GET_COMMENTS, async ({ body }) => {
-        await new CommentsSchema.find({ questionId })
-
-        // const totalLength = await QuestionsSchema.countDocuments({ classCode });
-        // await QuestionsSchema.find({ classCode }, { __v: 0, classCode: 0 }, { lean: true })
-        //     .limit(body.length + numberQuestionsPerRequest).sort({ "date": -1 }).exec()
-        //     .then(async res => {
-        //         socketConnected.emit(GET_COMMENTS, { messages: res, totalLength });
-        //     }) // Messages
-        //     .catch(err => console.log(err))
-    });
-
-    // Listen for new messages
+    // Listen for new comments
     socketConnected.on(NEW_COMMENT_EVENT, async data => {
         const { body } = data;
 
-        await new QuestionsSchema({
+        await new CommentsSchema({
             message: body.message,
             questionId: body.questionId,
             date: new Date().toISOString()
@@ -47,13 +33,25 @@ socket.on("connection", async socketConnected => {
         socket.in(questionId).emit(NEW_COMMENT_EVENT, data);
     });
 
+    socketConnected.on(GET_COMMENTS, async ({ body }) => {
+        const totalLength = await CommentsSchema.countDocuments({ questionId });
+
+        await CommentsSchema.find({ questionId }, { __v: 0, classCode: 0 }, { lean: true })
+            .limit(body.length + numberDataPerRequest).sort({ "date": -1 }).exec()
+            .then(async res => {
+                socketConnected.emit(GET_COMMENTS, { comments: res, totalLength });
+            }) // Messages
+            .catch(err => console.log(err))
+    });
+
     socketConnected.on(GET_MESSAGES, async ({ body }) => {
         const totalLength = await QuestionsSchema.countDocuments({ classCode });
+
         await QuestionsSchema.find({ classCode }, { __v: 0, classCode: 0, date: 0 }, { lean: true })
-            .limit(body.length + numberQuestionsPerRequest).sort({ "date": -1 }).exec()
+            .limit(body.length + numberDataPerRequest).sort({ "date": -1 }).exec()
             .then(async res => {
                 socketConnected.emit(GET_MESSAGES, { messages: res, totalLength });
-            }) // Messages
+            })
             .catch(err => console.log(err))
     });
 
