@@ -1,4 +1,4 @@
-const SubjectSchema = require("../models/SubjectSchema");
+const ClassSchema = require("../models/ClassSchema");
 const UserSchema = require("../models/UserSchema");
 const router = require("express").Router();
 
@@ -6,10 +6,11 @@ const router = require("express").Router();
 
 router.post("/createclass", async (req, res) => {
     const { className } = req.body;
+    const _id = Date.now().toString(36);
 
-    await new SubjectSchema({ className }).save()
-        .then(_ => res.status(200).json({ body: "Clase creada con éxito." }))
-        .catch(err => { console.log(err); res.status(500); })
+    await new ClassSchema({ _id, className }).save()
+        .then(_ => res.status(200).json({ status: 200, body: { _id } }))
+        .catch(err => { res.status(500).json({ err }); })
 });
 
 module.exports = router;

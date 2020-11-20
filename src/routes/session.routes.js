@@ -19,7 +19,7 @@ router.post("/registry", async (req, res) => {
     const { _id, username, password, role } = req.body,
         newUser = { _id, username, password, role };
 
-    // Check subjectsId 
+    // Check lessonsId
     console.log(newUser);
 
     await new UserSchema(newUser).save()

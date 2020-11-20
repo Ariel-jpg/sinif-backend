@@ -49,9 +49,7 @@ socket.on("connection", async socketConnected => {
 
         await QuestionsSchema.find({ classCode }, { __v: 0, classCode: 0, date: 0 }, { lean: true })
             .limit(body.length + numberDataPerRequest).sort({ "date": -1 }).exec()
-            .then(async res => {
-                socketConnected.emit(GET_MESSAGES, { messages: res, totalLength });
-            })
+            .then(res => socketConnected.emit(GET_MESSAGES, { messages: res, totalLength }))
             .catch(err => console.log(err))
     });
 
@@ -63,9 +61,8 @@ socket.on("connection", async socketConnected => {
             title: body.title,
             description: body.description, classCode,
             date: new Date().toISOString()
-        }).save();
-
-        socket.in(classCode).emit(NEW_CLASS_MESSAGE_EVENT, data);
+        }).save()
+            .then(({ _id, title, description }) => { socket.in(classCode).emit(NEW_CLASS_MESSAGE_EVENT, { body: { _id, title, description } }) })
     });
 
     // Leave the room if the user closes the socket
